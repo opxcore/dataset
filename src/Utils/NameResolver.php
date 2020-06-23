@@ -28,9 +28,6 @@ class NameResolver
         $namespace = $global ? '*' : $parts[0];
         $filename = str_replace('.', DIRECTORY_SEPARATOR, $global ? $parts[0] : $parts[1]);
 
-        return [
-            'namespace' => $namespace,
-            'filename' => $filename
-        ];
+        return [$namespace,$filename];
     }
 }
