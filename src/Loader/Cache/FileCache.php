@@ -4,6 +4,7 @@ namespace OpxCore\DataSet\Loader\Cache;
 
 use Carbon\Carbon;
 use OpxCore\DataSet\Loader\Interfaces\CacheInterface;
+use RuntimeException;
 
 class FileCache implements CacheInterface
 {
@@ -71,7 +72,15 @@ class FileCache implements CacheInterface
      */
     public function set($filename, string $content): void
     {
-        @file_put_contents($this->makeFilename($filename), $content);
+        $name = $this->makeFilename($filename);
+        // make directory recursive
+        $dir = pathinfo($name, PATHINFO_DIRNAME);
+        if (!is_dir($dir) && !mkdir($dir, 0777, true) && !is_dir($dir)) {
+            // @codeCoverageIgnoreStart
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            // @codeCoverageIgnoreEnd
+        }
+        @file_put_contents($name, $content);
     }
 
     /**
