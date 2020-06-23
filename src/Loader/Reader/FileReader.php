@@ -16,9 +16,12 @@ use OpxCore\DataSet\Loader\Exceptions\FileNotFoundException;
 use OpxCore\DataSet\Loader\Exceptions\FileReadErrorException;
 use OpxCore\DataSet\Loader\Interfaces\ReaderInterface;
 use OpxCore\DataSet\Loader\File;
+use OpxCore\DataSet\Loader\Traits\MakeFileName;
 
-class FileContentReader implements ReaderInterface
+abstract class FileReader implements ReaderInterface
 {
+    use MakeFileName;
+
     /**
      * Find file with name in set of search paths and last modification timestamp.
      *
@@ -36,11 +39,12 @@ class FileContentReader implements ReaderInterface
         }
 
         foreach ($paths as $path) {
-            $fullName = $this->makeFileName($path, $name, $extension);
+            $file = new File($name, $extension, $path);
+            $fullName = $this->makeFileName($file);
             if (file_exists($fullName)) {
                 $lastModified = @filemtime($fullName);
-
-                return new File($name, $extension, $path, Carbon::parse($lastModified));
+                $file->setTimestamp(Carbon::parse($lastModified));
+                return $file;
             }
         }
 
@@ -58,7 +62,7 @@ class FileContentReader implements ReaderInterface
      */
     public function content(File $file)
     {
-        $fullName = $this->makeFileName($file->getFilePath(), $file->getFileName());
+        $fullName = $this->makeFileName($file);
 
         $content = $this->getContent($fullName);
 
@@ -67,34 +71,5 @@ class FileContentReader implements ReaderInterface
         }
 
         return $content;
-    }
-
-    /**
-     * Make full filename with path.
-     *
-     * @param string $path
-     * @param string $filename
-     * @param string|null $extension
-     *
-     * @return  string
-     */
-    protected function makeFileName(string $path, string $filename, ?string $extension = null): string
-    {
-        $name = $path . DIRECTORY_SEPARATOR . $filename . ($extension ? ".{$extension}" : $extension);
-
-        // remove double separator in file name
-        return str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $name);
-    }
-
-    /**
-     * Read file content.
-     *
-     * @param string $fileName
-     *
-     * @return  false|string
-     */
-    protected function getContent(string $fileName)
-    {
-        return @file_get_contents($fileName);
     }
 }

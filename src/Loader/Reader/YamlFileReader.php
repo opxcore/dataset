@@ -11,7 +11,7 @@
 
 namespace OpxCore\DataSet\Loader\Reader;
 
-class PhpFileReader extends FileReader
+class YamlFileReader extends FileReader
 {
     /**
      * Get extension of files associated to reader.
@@ -20,18 +20,18 @@ class PhpFileReader extends FileReader
      */
     public function extension(): ?string
     {
-        return 'php';
+        return 'yaml';
     }
 
     /**
-     * Require PHP file.
+     * Read file content.
      *
      * @param string $fileName
      *
-     * @return  mixed
+     * @return  false|string
      */
     protected function getContent(string $fileName)
     {
-        return require $fileName;
+        return @file_get_contents($fileName);
     }
 }

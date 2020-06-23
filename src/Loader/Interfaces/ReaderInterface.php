@@ -16,6 +16,13 @@ use OpxCore\DataSet\Loader\File;
 interface ReaderInterface
 {
     /**
+     * Get extension of files associated to reader.
+     *
+     * @return  string|null
+     */
+    public function extension(): ?string;
+
+    /**
      * Find file with name in set of search paths and last modification timestamp.
      *
      * @param string $name
