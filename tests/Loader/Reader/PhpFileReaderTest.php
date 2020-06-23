@@ -13,7 +13,7 @@ class PhpFileReaderTest extends TestCase
     {
         $loader = new PhpFileReader;
 
-        $templateFile = $loader->find('/assets/php_test', 'php', $this->assetsPath);
+        $templateFile = $loader->find('/assets/php_test', $loader->extension(), $this->assetsPath);
 
         $this->assertEquals(
             [

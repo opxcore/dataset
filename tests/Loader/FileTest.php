@@ -10,19 +10,16 @@ class FileTest extends TestCase
 {
     protected function initFile(): File
     {
-        return new File('filename', 'ext', 'path', Carbon::parse('2020-06-18 12:00'));
+        return new File('sub/filename', 'ext', 'path/home', Carbon::parse('2020-06-18 12:00'));
     }
 
     public function testGetFileName(): void
     {
         $file = $this->initFile();
-        $this->assertEquals('filename.ext', $file->getFileName());
-    }
-
-    public function testGetFilePath(): void
-    {
-        $file = $this->initFile();
-        $this->assertEquals('path', $file->getFilePath());
+        $this->assertEquals(
+            ['path/home', 'sub', 'filename', 'ext', Carbon::parse('2020-06-18 12:00')],
+            [$file->path(), $file->localPath(), $file->filename(), $file->extension(), $file->timestamp()]
+        );
     }
 
     public function testFileNewerCase(): void
@@ -40,6 +37,7 @@ class FileTest extends TestCase
     public function testFileSameCase(): void
     {
         $file = $this->initFile();
+        $file->setTimestamp(Carbon::parse('2020-06-18 12:00'));
         $this->assertTrue($file->isNotNewerWhen(Carbon::parse('2020-06-18 12:00')));
     }
 }
