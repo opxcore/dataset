@@ -1,0 +1,13 @@
+<?php
+
+return [
+    'extends' => 'test',
+    'fields' => [
+        'id' => [
+            'name' => 'id'
+        ],
+        'content' => [
+            'name' => 'content'
+        ]
+    ]
+];

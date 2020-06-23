@@ -1,0 +1,40 @@
+{
+  "name": "opxcore/dataset",
+  "description": "OpxCore DataSet component.",
+  "type": "library",
+  "keywords": [
+    "opxcore",
+    "dataset"
+  ],
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/opxcore/dataset/issues",
+    "source": "https://github.com/opxcore/dataset"
+  },
+  "authors": [
+    {
+      "name": "Lozovoy Vyacheslav",
+      "email": "opxcore@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "opxcore/pathset": "^1.0.4",
+    "nesbot/carbon": "^2.35.0",
+    "symfony/yaml": "~5.1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~9.1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "OpxCore\\DataSet\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OpxCore\\Tests\\DataSet\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev"
+}
