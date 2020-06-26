@@ -11,6 +11,7 @@
 
 namespace OpxCore\DataSet;
 
+use OpxCore\DataSet\Loader\Loader;
 use OpxCore\PathSet\PathSet;
 
 class DataSet
@@ -67,5 +68,22 @@ class DataSet
     public static function clearPaths(): void
     {
         self::$paths = null;
+    }
+
+    /**
+     * Load dataset template.
+     *
+     * @param $name
+     * @param array|null $options
+     *
+     * @return  Template
+     */
+    public static function load($name, ?array $options = null): Template
+    {
+        $loader = new Loader(
+            self::$paths,
+        );
+
+        return $loader->get($name, self::$paths, $options);
     }
 }
