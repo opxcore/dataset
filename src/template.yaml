@@ -1,0 +1,59 @@
+# Name of template too extend. `namespace` is a name of `Path` registered in `PathSet` with path(s) to search template.
+# If no namespace given global namespace would be used, e.g. `path.name` would be read as `*::path.name`.
+# `path` and `name` is a related path (to `PathSet` paths) and name of file without extension. File extension depends
+# on file reader and would be added automatically (`.yaml` for `YamlFileReader` and `.php` for `PhpFileReader`).
+# OpxCore consideration (but not required at all):
+# - `namespace` is a name of module providing model
+# - `model` is a name of model
+# - `template` is a type of model data template, `default` is a name for primary model definition
+extends: namespace::model.template
+
+# Flags used to customize at compilation time
+flags:
+  - disable cache # Disable parsed template caching. Enabled by default.
+  - disable extending # Do not extend template. Enabled by default.
+
+# `namespace`, `localization` and `model` is definitions of model, which this template will be applied to.
+# Used to generate labels for sections, groups and fields for frontend in case of labels and captions is not set.
+# If caption of section, group or field is set it would be used directly without localization. Otherwise localized
+# label will be used (see `opxcore/translator`).
+# Label composing rules:
+# {namespace::}{localization.}{model.}(section|group|field).name
+namespace: namespace
+localization: template
+model: model
+
+# Permissions applicable to whole template. Each field will inherit read and update permissions.
+# Permissions description:
+# - if no permissions set they would be inherited at next scheme:
+#   field <- group & section <- whole template <- parent template (see `extends`)
+#   If there are no any permissions any action can be done.
+# - `permissions: inherit` is a same as above, but more verbose.
+# - `permissions: none` unsets all permissions.
+# - all other values would be passed to authorization layer to make decision about abilities to take an action.
+permissions:
+
+# Set of sections definitions. Sections are used to split fields to tabs in frontend and distribute permissions.
+sections:
+  - name: general # *required* Name of section.
+    label: namespace::localization_file.localization_key # Localization label. See description above.
+    caption: General section # Direct caption. See description above.
+    permissions: # Set of permissions. See description above.
+
+# Set of groups definitions. They are used to group related fields behind one caption in frontend and distribute permissions.
+groups:
+  - name: primary # *required* Name of group.
+    label: namespace::localization_file.localization_key # Localization label. See description above.
+    caption: Primagy group # Direct caption. See description above.
+    permissions: # Set of permissions. See description above.
+
+# Set of fields definitions
+fields:
+  - name: id # *required* Name of field.
+    label: namespace::localization_file.localization_key # Localization label. See description above.
+    caption: Field title # Direct caption. See description above.
+    permissions: # Set of permissions. See description above.
+    section: general # Section which field belongs to
+    group: primary # Group which field belongs to
+    placement: general/primary # Or shorthand for section and group
+    type: field_type # Field type definition. By default this value would be `default`.
