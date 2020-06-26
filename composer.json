@@ -19,7 +19,7 @@
   ],
   "require": {
     "php": ">=7.4",
-    "opxcore/pathset": "^1.0.4",
+    "opxcore/pathset": "^1.0.5",
     "nesbot/carbon": "^2.35.0",
     "symfony/yaml": "~5.1.0"
   },
