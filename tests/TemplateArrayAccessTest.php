@@ -9,26 +9,35 @@ use PHPUnit\Framework\TestCase;
 
 class TemplateArrayAccessTest extends TestCase
 {
+    protected function makeTemplate(): Template
+    {
+        return new Template();
+    }
+
+    protected function makeField(string $name): Field
+    {
+        return new Field(['name' => $name]);
+    }
 
     public function testOffsetExists(): void
     {
-        $template = new Template();
-        $field = new Field();
-        $template['test'] = $field;
+        $template = $this->makeTemplate();
+        $field = $this->makeField('test');
+        $template->addField($field);
         $this->assertTrue(isset($template['test']));
     }
 
     public function testOffsetNotExists(): void
     {
-        $template = new Template();
-        $field = new Field();
-        $template['test'] = $field;
+        $template = $this->makeTemplate();
+        $field = $this->makeField('test');
+        $template->addField($field);
         $this->assertFalse(isset($template['not_test']));
     }
 
     public function testOffsetInvalidSet(): void
     {
-        $template = new Template();
+        $template = $this->makeTemplate();
         $this->expectException(InvalidArgumentException::class);
         $template['test'] = ['test'];
         unset($template);
@@ -36,17 +45,17 @@ class TemplateArrayAccessTest extends TestCase
 
     public function testOffsetGet(): void
     {
-        $template = new Template();
-        $field = new Field();
-        $template['test'] = $field;
+        $template = $this->makeTemplate();
+        $field = $this->makeField('test');
+        $template->addField($field);
         $this->assertEquals($template['test'], $field);
     }
 
     public function testOffsetUnset(): void
     {
         $template = new Template();
-        $field = new Field();
-        $template['test'] = $field;
+        $field = $this->makeField('test');
+        $template->addField($field);
         unset($template['test']);
         $this->assertFalse(isset($template['test']));
     }

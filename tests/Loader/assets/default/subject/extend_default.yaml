@@ -1,0 +1,4 @@
+extends: extend_global
+
+fields:
+  - name: title

@@ -1,0 +1,5 @@
+extends: test::subject.extend_default
+
+fields:
+  - name: id
+
