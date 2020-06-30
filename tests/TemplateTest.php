@@ -34,7 +34,6 @@ class TemplateTest extends TestCase
     public function testTemplateExtends(): void
     {
         $templateArray = $this->getTemplateArray();
-        // $templateArray['extends'] = 'namespace::model.template';
         $template = new Template($templateArray);
         $this->assertEquals('namespace::model.template', $template->extends());
     }

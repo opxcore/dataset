@@ -14,7 +14,7 @@ class LoaderTest extends TestCase
 {
     protected $path = __DIR__;
 
-    protected function initLoader($withCache = true): Loader
+    protected function initLoader(): Loader
     {
         $paths = new PathSet([
             '*' => [$this->path . '/assets/global'],
@@ -34,7 +34,7 @@ class LoaderTest extends TestCase
 
         $names = [];
 
-        foreach ($template as $field) {
+        foreach ($template->fields as $field) {
             /** @var Field $field */
             $names[] = $field->name();
         }

@@ -11,31 +11,37 @@
 namespace OpxCore\Tests\DataSet;
 
 use OpxCore\DataSet\Exceptions\BadPropertyAccessException;
-use OpxCore\DataSet\Exceptions\InvalidFieldDefinitionException;
 use OpxCore\DataSet\Exceptions\InvalidPropertyTypeException;
 use OpxCore\DataSet\Field;
 use PHPUnit\Framework\TestCase;
 
 class FieldTest extends TestCase
 {
-    protected function makeField(): Field
+    protected function makeField(?string $type = null, ?string $namespace = null, ?string $localization = null, ?string $model = null): Field
     {
-        return new Field(['name' => 'test']);
+        $field = ['name' => 'test'];
+        if ($type !== null) {
+            $field['type'] = $type;
+        }
+        return new Field($field, $namespace, $localization, $model);
     }
 
     public function testCreateFromArray(): void
     {
         $field = $this->makeField();
         $this->assertEquals(
-            ['test', 'default'],
-            [$field->name(), $field->type]
+            'default',
+            $field->type
         );
     }
 
-    public function testCreateWrong(): void
+    public function testCreateFromArrayWithType(): void
     {
-        $this->expectException(InvalidFieldDefinitionException::class);
-        $field = new Field(['name' => '']);
+        $field = $this->makeField('string');
+        $this->assertEquals(
+            'string',
+            $field->type
+        );
     }
 
     public function testGetWrong(): void
@@ -48,37 +54,44 @@ class FieldTest extends TestCase
     public function testSet(): void
     {
         $field = $this->makeField();
-        $field->namespace = 'testing';
+        $field->type = 'testing';
         $this->assertEquals(
             'testing',
-            $field->namespace
+            $field->type
         );
     }
 
     public function testIsSet(): void
     {
         $field = $this->makeField();
-        $field->namespace = 'testing';
-        $this->assertTrue(isset($field->namespace));
+        $field->validation = 'testing';
+        $this->assertTrue(isset($field->validation));
     }
 
     public function testIsNotSet(): void
     {
         $field = $this->makeField();
-        $this->assertFalse(isset($field->namespace));
+        $this->assertFalse(isset($field->validation));
     }
 
-    public function testBadProperty(): void
+    public function testSetInvalidProperty(): void
     {
         $field = $this->makeField();
         $this->expectException(BadPropertyAccessException::class);
-        $field->ddff = 'ssss';
+        $field->invalid_property = 'test';
+    }
+
+    public function testGetInvalidProperty(): void
+    {
+        $field = $this->makeField();
+        $this->expectException(BadPropertyAccessException::class);
+        $field->invalid_property;
     }
 
     public function testInvalidPropertyType(): void
     {
         $field = $this->makeField();
         $this->expectException(InvalidPropertyTypeException::class);
-        $field->label = ['wrong'];
+        $field->validation = ['wrong'];
     }
 }
