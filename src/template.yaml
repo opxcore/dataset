@@ -23,37 +23,40 @@ namespace: namespace
 localization: template
 model: model
 
-# Permissions applicable to whole template. Each field will inherit read and update permissions.
-# Permissions description:
-# - if no permissions set they would be inherited at next scheme:
+# Policy general description:
+# 'mode' is flag to determine permissions inheritance strategy:
+# - 'inherit' (by default) will inherit all permissions regular way:
 #   field <- group & section <- whole template <- parent template (see `extends`)
-#   If there are no any permissions any action can be done.
-# - `permissions: inherit` is a same as above, but more verbose.
-# - `permissions: none` unsets all permissions.
-# - all other values would be passed to authorization layer to make decision about abilities to take an action.
-permissions:
+# - 'overwrite' means only current permissions would be checked.
+# 'permissions' is set of values would be passed to authorization layer to make decision about abilities to take an action.
+# If no permissions is set or empty they would means any action can be done.
+
+# Policy applicable to whole template. Each field will inherit read and update permissions.
+policy:
+  permissions:
+  mode: inherit
 
 # Set of sections definitions. Sections are used to split fields to tabs in frontend and distribute permissions.
 sections:
   - name: general # *required* Name of section.
     label: namespace::localization_file.localization_key # Localization label. See description above.
     caption: General section # Direct caption. See description above.
-    permissions: # Set of permissions. See description above.
+    policy: # Set of policy. See description above.
 
 # Set of groups definitions. They are used to group related fields behind one caption in frontend and distribute permissions.
 groups:
   - name: primary # *required* Name of group.
     label: namespace::localization_file.localization_key # Localization label. See description above.
     caption: Primagy group # Direct caption. See description above.
-    permissions: # Set of permissions. See description above.
+    policy: # Set of policy. See description above.
 
 # Set of fields definitions
 fields:
   - name: id # *required* Name of field.
     label: namespace::localization_file.localization_key # Localization label. See description above.
     caption: Field title # Direct caption. See description above.
-    permissions: # Set of permissions. See description above.
+    policy: # Set of policy. See description above.
     section: general # Section which field belongs to
     group: primary # Group which field belongs to
-    placement: general/primary # Or shorthand for section and group
+    placement: general/primary # Shorthand for section and group. If placement is set, section and group will be ignored.
     type: field_type # Field type definition. By default this value would be `default`.
