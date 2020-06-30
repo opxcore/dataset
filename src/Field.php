@@ -12,68 +12,83 @@
 namespace OpxCore\DataSet;
 
 use OpxCore\DataSet\Exceptions\BadPropertyAccessException;
-use OpxCore\DataSet\Exceptions\InvalidFieldDefinitionException;
 use OpxCore\DataSet\Exceptions\InvalidPropertyTypeException;
+use OpxCore\DataSet\Foundation\Collectible;
 
 /**
  * Class Field
  *
  * @package OpxCore\DataSet
  *
- * @property string $namespace
- * @property string $model
- * @property string $column
- * @property string $label
- * @property string $type
+ * @property string|null $type
+ * @property string|null $validation
+ * @property string|null $section
+ * @property string|null $group
  */
-class Field
+class Field extends Collectible
 {
+    /**
+     * List of enabled attributes.
+     */
     protected const ATTRIBUTES_LIST = [
-        'namespace' => 'string',
-        'model' => 'string',
-        'column' => 'string',
-        'label' => 'string',
         'type' => 'string',
+        'section' => 'string|null',
+        'group' => 'string|null',
+        'validation' => 'string',
     ];
 
     /** @var array Attributes */
     protected array $attributes = [];
 
-    /** @var string Field name */
-    protected string $name;
-
-    public function __construct(array $field)
-    {
-        if (empty($field['name'])) {
-            throw new InvalidFieldDefinitionException('Field name property must be defined');
-        }
-
-        $this->name = $field['name'];
-        $this->type = $field['type'] ?? 'default';
-    }
-
     /**
-     * Get field name.
+     * Field constructor.
      *
-     * @return  string
+     * @param array $properties Array of base properties definition. `name` is required.
+     * @param string $context
+     * @param string|null $namespace
+     * @param string|null $localization
+     * @param string|null $model
+     *
+     * @return  void
      */
-    public function name(): string
+    public function __construct(array $properties, ?string $namespace = null, ?string $localization = null, ?string $model = null, string $context = 'field')
     {
-        return $this->name;
+        parent::__construct($properties, $namespace, $localization, $model, $context);
+
+        $this->type = $properties['type'] ?? 'default';
+
+        if (isset($properties['placement'])) {
+            $exploded = explode('/', $properties['placement']);
+            $section = empty($exploded[0]) ? null : $exploded[0];
+            $group = empty($exploded[1]) ? null : $exploded[1];
+        } else {
+            $section = $properties['section'] ?? null;
+            $group = $properties['group'] ?? null;
+        }
+        $this->section = $section;
+        $this->group = $group;
     }
 
     /**
      * Extend another template by current.
      *
-     * @param Field $field
+     * @param Collectible $collectible
      *
      * @return  void
      */
-    public function extendWith(Field $field): void
+    public function extend(Collectible $collectible): void
     {
-
+        parent::extend($collectible);
+        // TODO: add field overriding
     }
 
+    /**
+     * Attribute getter.
+     *
+     * @param string $name
+     *
+     * @return  mixed|null
+     */
     public function __get($name)
     {
         if (!isset($this::ATTRIBUTES_LIST[$name])) {
@@ -83,17 +98,34 @@ class Field
         return $this->attributes[$name] ?? null;
     }
 
+    /**
+     * Whether attribute set.
+     *
+     * @param string $name
+     *
+     * @return  bool
+     */
     public function __isset($name)
     {
         return isset($this::ATTRIBUTES_LIST[$name], $this->attributes[$name]);
     }
 
+    /**
+     * Attribute setter.
+     *
+     * @param mixed $name
+     * @param mixed $value
+     *
+     * @return  void
+     */
     public function __set($name, $value)
     {
         if (!isset($this::ATTRIBUTES_LIST[$name])) {
             throw new BadPropertyAccessException("Missing property [{$name}] in Field");
         }
-        if (($type = gettype($value)) !== $this::ATTRIBUTES_LIST[$name]) {
+        $type = strtolower(gettype($value));
+        $expected = explode('|', $this::ATTRIBUTES_LIST[$name]);
+        if (!in_array($type, $expected, true)) {
             throw new InvalidPropertyTypeException("Invalid type of property [{$name}]. [{$this::ATTRIBUTES_LIST[$name]}] expected, got [{$type}]");
         }
         $this->attributes[$name] = $value;

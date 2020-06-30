@@ -22,16 +22,6 @@ trait TemplateGeneralPropertiesTrait
     /** @var bool Whether extending disabled for this template */
     protected bool $extending = false;
 
-    /** @var string|null Namespace */
-    protected ?string $namespace;
-
-    /** @var string|null Localization */
-    protected ?string $localization;
-
-    /** @var string|null Name of model for current template */
-    protected ?string $model;
-
-
     /**
      * Get template to extend by current.
      *
@@ -138,67 +128,5 @@ trait TemplateGeneralPropertiesTrait
         } else {
             $this->enableExtending();
         }
-    }
-
-    /**
-     * Set namespace.
-     *
-     * @param string|null $namespace
-     *
-     * @return  void
-     */
-    public function setNamespace(?string $namespace): void
-    {
-        $this->namespace = $namespace;
-    }
-
-    /**
-     * Get namespace.
-     *
-     * @return string|null
-     */
-    public function namespace(): ?string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * Set localization.
-     *
-     * @param string|null $localization
-     */
-    public function setLocalization(?string $localization): void
-    {
-        $this->localization = $localization;
-    }
-
-    /**
-     * Get localization.
-     *
-     * @return string|null
-     */
-    public function localization(): ?string
-    {
-        return $this->localization;
-    }
-
-    /**
-     * Set model name.
-     *
-     * @param string|null $model
-     */
-    public function setModel(?string $model): void
-    {
-        $this->model = $model;
-    }
-
-    /**
-     * Get model name.
-     *
-     * @return string|null
-     */
-    public function model(): ?string
-    {
-        return $this->model;
     }
 }

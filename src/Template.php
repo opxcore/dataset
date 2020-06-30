@@ -11,24 +11,24 @@
 
 namespace OpxCore\DataSet;
 
-use ArrayAccess;
-use ArrayIterator;
-use IteratorAggregate;
-use InvalidArgumentException;
+use OpxCore\DataSet\Foundation\Collectible;
+use OpxCore\DataSet\Traits\HasNamings;
 use OpxCore\DataSet\Traits\TemplateGeneralPropertiesTrait;
+use OpxCore\DataSet\Foundation\Collection;
 
-class Template implements ArrayAccess, IteratorAggregate
+class Template
 {
-    use TemplateGeneralPropertiesTrait;
+    use TemplateGeneralPropertiesTrait,
+        HasNamings;
 
-    /** @var array|null Set of sections */
-    protected ?array $sections = null;
+    /** @var Collection Set of sections */
+    public Collection $sections;
 
-    /** @var array|null Set of groups */
-    protected ?array $groups = null;
+    /** @var Collection Set of groups */
+    public Collection $groups;
 
-    /** @var array|null Set of fields */
-    protected ?array $fields = null;
+    /** @var Collection Set of fields */
+    public Collection $fields;
 
     public function __construct(?array $template = null)
     {
@@ -38,15 +38,35 @@ class Template implements ArrayAccess, IteratorAggregate
         $this->setLocalization($template['localization'] ?? null);
         $this->setModel($template['model'] ?? null);
 
-        //$template['sections']
-        //$template['groups']
-        if (isset($template['fields']) && is_array($template['fields'])) {
-            foreach ($template['fields'] as $field) {
-                $this->addField(new Field($field));
-            }
+        $this->sections = new Collection;
+        $this->groups = new Collection;
+        $this->fields = new Collection;
+
+        if ($template !== null) {
+            $this->addCollectibles($template, 'sections', Section::class);
+            $this->addCollectibles($template, 'groups', Group::class);
+            $this->addCollectibles($template, 'fields', Field::class);
         }
     }
 
+    /**
+     * Iterate and add collectibles.
+     *
+     * @param array $template
+     * @param string $key
+     * @param string $collectibleClass
+     *
+     * @return  void
+     */
+    protected function addCollectibles(array $template, string $key, string $collectibleClass): void
+    {
+        if (isset($template[$key]) && is_array($template[$key])) {
+            foreach ($template[$key] as $rawCollectible) {
+                $collectible = new $collectibleClass($rawCollectible, $this->namespace(), $this->localization(), $this->model(), $key);
+                $this->{$key}[$collectible->name()] = $collectible;
+            }
+        }
+    }
 
     /**
      * Extend another template by current.
@@ -55,100 +75,23 @@ class Template implements ArrayAccess, IteratorAggregate
      *
      * @return  void
      */
-    public function extendWith(Template $template): void
+    public function extend(Template $template): void
     {
-        $fields = $template->fields();
-
-        foreach ($fields as $name => $field) {
-            /** @var Field $field */
-            if (isset($this[$name])) {
-                $this[$name]->extendWith($field);
+        foreach (['sections', 'groups', 'fields'] as $key) {
+            if ($template->{$key}->count() === 0) {
                 continue;
             }
+            /** @var Collectible $collectibles */
+            $collectibles = $template->{$key};
 
-            $this->addField($field);
+            foreach ($collectibles as $name => $collectible) {
+                /** @var Collectible $collectible */
+                if (isset($this->{$key}[$name])) {
+                    $this->{$key}[$name]->extend($collectible);
+                    continue;
+                }
+                $this->{$key}->add($collectible);
+            }
         }
-    }
-
-    /**
-     * Add field to template.
-     *
-     * @param Field $field
-     *
-     * @return  void
-     */
-    public function addField(Field $field): void
-    {
-        $this[$field->name()] = $field;
-    }
-
-    /**
-     * Get all fields.
-     *
-     * @return  array
-     */
-    public function fields(): array
-    {
-        return $this->fields;
-    }
-
-    /**
-     * Whether a field exists.
-     *
-     * @param string $fieldName A name of field to check for.
-     *
-     * @return  bool
-     */
-    public function offsetExists($fieldName): bool
-    {
-        return isset($this->fields[$fieldName]);
-    }
-
-    /**
-     * Retrieve field.
-     *
-     * @param string $fieldName
-     *
-     * @return  Field
-     */
-    public function offsetGet($fieldName): Field
-    {
-        return $this->fields[$fieldName];
-    }
-
-    /**
-     * Set field.
-     *
-     * @param string $fieldName
-     * @param Field $field
-     *
-     * @return  void
-     */
-    public function offsetSet($fieldName, $field): void
-    {
-        if (!$field instanceof Field) {
-            $type = gettype($field);
-            $type = ($type !== 'object') ?: get_class($field);
-            throw new InvalidArgumentException("New value must be type of [TemplateField], [{$type}] given.");
-        }
-
-        $this->fields[$fieldName] = $field;
-    }
-
-    /**
-     * Unset field.
-     *
-     * @param mixed $fieldName
-     *
-     * @return  void
-     */
-    public function offsetUnset($fieldName): void
-    {
-        unset($this->fields[$fieldName]);
-    }
-
-    public function getIterator()
-    {
-        return new ArrayIterator($this->fields);
     }
 }

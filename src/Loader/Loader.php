@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * This file is part of the OpxCore.
+ *
+ * Copyright (c) Lozovoy Vyacheslav <opxcore@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace OpxCore\DataSet\Loader;
-
 
 use OpxCore\DataSet\Exceptions\InvalidTemplateDefinitionException;
 use OpxCore\DataSet\Loader\Interfaces\CacheInterface;
@@ -102,7 +109,7 @@ class Loader implements Interfaces\LoaderInterface
             if ($extends === $name) {
                 throw new InvalidTemplateDefinitionException("Recursive extending found in [{$extends}]");
             }
-            $template->extendWith($this->load($extends, $options));
+            $template->extend($this->load($extends, $options));
         }
 
         return $template;
