@@ -25,16 +25,20 @@ model: model
 
 # Policy general description:
 # 'mode' is flag to determine permissions inheritance strategy:
-# - 'inherit' (by default) will inherit all permissions regular way:
-#   field <- group & section <- whole template <- parent template (see `extends`)
-# - 'overwrite' means only current permissions would be checked.
+# field <- group & section <- whole template <- parent template (see `extends`)
+# - 'unset' disables all inherited and current permissions.
+# - 'no inherit' means only current permissions would be checked.
+# - 'inherit current' will inherit all permissions except parent template permissions.
+# - 'inherit all' (by default) will inherit all permissions regular way.
 # 'permissions' is set of values would be passed to authorization layer to make decision about abilities to take an action.
-# If no permissions is set or empty they would means any action can be done.
+# If no permissions is set or empty (with inherited) they would means any action can be done.
 
 # Policy applicable to whole template. Each field will inherit read and update permissions.
 policy:
   permissions:
-  mode: inherit
+    read: true
+    update: false
+  mode: inherit all
 
 # Set of sections definitions. Sections are used to split fields to tabs in frontend and distribute permissions.
 sections:

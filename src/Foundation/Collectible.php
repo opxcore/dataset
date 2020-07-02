@@ -162,28 +162,22 @@ class Collectible
      */
     public function extend(Collectible $collectible): void
     {
-        $this->setInheritedPolicy($collectible->policy());
+        $this->policy->setInherited($collectible->policy());
     }
 
     /**
-     * Get permissions.
+     * Get or set template policy.
+     *
+     * @param Policy|null $policy
      *
      * @return  Policy
      */
-    public function policy(): ?Policy
+    public function policy(?Policy $policy = null): Policy
     {
-        return $this->policy;
-    }
+        if ($policy !== null) {
+            $this->policy = $policy;
+        }
 
-    /**
-     * Set inherited permissions.
-     *
-     * @param Policy $permissions
-     *
-     * @return  void
-     */
-    public function setInheritedPolicy(Policy $permissions): void
-    {
-        $this->policy->setInherited($permissions);
+        return $this->policy;
     }
 }

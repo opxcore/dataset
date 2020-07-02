@@ -11,29 +11,21 @@ class DummyParserTest extends TestCase
     {
         $parser = new DummyParser();
 
+        $test = [
+            'extends' => 'test',
+            'fields' => [
+                'id' => [
+                    'name' => 'id',
+                ],
+                'content' => [
+                    'name' => 'content',
+                ],
+            ]
+        ];
+
         $this->assertEquals(
-            [
-                'extends' => 'test',
-                'fields' => [
-                    'id' => [
-                        'name' => 'id',
-                    ],
-                    'content' => [
-                        'name' => 'content',
-                    ],
-                ]
-            ],
-            $parser->parse([
-                'extends' => 'test',
-                'fields' => [
-                    'id' => [
-                        'name' => 'id',
-                    ],
-                    'content' => [
-                        'name' => 'content',
-                    ],
-                ]
-            ])
+            $test,
+            $parser->parse($test)
         );
     }
 }

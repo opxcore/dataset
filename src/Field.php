@@ -14,6 +14,7 @@ namespace OpxCore\DataSet;
 use OpxCore\DataSet\Exceptions\BadPropertyAccessException;
 use OpxCore\DataSet\Exceptions\InvalidPropertyTypeException;
 use OpxCore\DataSet\Foundation\Collectible;
+use OpxCore\Interfaces\Authorization\AuthorizationResponse;
 
 /**
  * Class Field
@@ -39,6 +40,12 @@ class Field extends Collectible
 
     /** @var array Attributes */
     protected array $attributes = [];
+
+    /** @var bool|null Whether field can be read. */
+    protected ?bool $read = null;
+
+    /** @var bool|null Whether field can be updated. */
+    protected ?bool $update = null;
 
     /**
      * Field constructor.
@@ -80,6 +87,39 @@ class Field extends Collectible
     {
         parent::extend($collectible);
         // TODO: add field overriding
+    }
+
+    /**
+     * Apply authorization.
+     *
+     * @param AuthorizationResponse $response
+     *
+     * @return  void
+     */
+    public function authorize(AuthorizationResponse $response): void
+    {
+        $this->read = $response->can('read');
+        $this->update = $response->can('update');
+    }
+
+    /**
+     * Whether field could bu read.
+     *
+     * @return  bool
+     */
+    public function couldBeRead(): bool
+    {
+        return $this->read ?? true;
+    }
+
+    /**
+     * Whether field could bu updated.
+     *
+     * @return  bool
+     */
+    public function couldBeUpdated(): bool
+    {
+        return $this->update ?? true;
     }
 
     /**

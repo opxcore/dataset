@@ -16,7 +16,7 @@ class YamlFileReaderTest extends TestCase
     public function testFindFileSinglePathExists(): void
     {
         $loader = new YamlFileReader;
-        $templateFile = $loader->find('/assets/simple_test', null, $this->path);
+        $templateFile = $loader->find('/fixtures/simple_test', null, $this->path);
 
         $this->assertEquals(
             'simple_test',
@@ -27,7 +27,7 @@ class YamlFileReaderTest extends TestCase
     public function testFindFileMultiplePathExists(): void
     {
         $loader = new YamlFileReader;
-        $templateFile = $loader->find('/assets/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
+        $templateFile = $loader->find('/fixtures/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
 
         $this->assertEquals(
             'simple_test',
@@ -41,13 +41,13 @@ class YamlFileReaderTest extends TestCase
 
         $this->expectException(FileNotFoundException::class);
 
-        $loader->find('/assets/simple_test', null, ['some_path', 'another_path']);
+        $loader->find('/fixtures/simple_test', null, ['some_path', 'another_path']);
     }
 
     public function testGetFileContent(): void
     {
         $loader = new YamlFileReader;
-        $templateFile = $loader->find('/assets/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
+        $templateFile = $loader->find('/fixtures/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
 
         $this->assertEquals(
             'test',
@@ -58,7 +58,7 @@ class YamlFileReaderTest extends TestCase
     public function testGetFileContentError(): void
     {
         $loader = new YamlFileReader;
-        $templateFile = $loader->find('simple_test', null, ['some_path', $this->path . '/assets', 'another_path']);
+        $templateFile = $loader->find('simple_test', null, ['some_path', $this->path . '/fixtures', 'another_path']);
         $templateIllegalFile = new File($templateFile->filename(), '.wrong', $templateFile->path(), new Carbon);
 
         $this->expectException(FileReadErrorException::class);

@@ -7,13 +7,13 @@ use PHPUnit\Framework\TestCase;
 
 class YamlParserTest extends TestCase
 {
-    protected string $assetsPath = __DIR__;
+    protected string $path = __DIR__;
 
     public function testParse(): void
     {
         $parser = new YamlParser();
 
-        $content = file_get_contents($this->assetsPath . '/assets/parser_test.yaml');
+        $content = file_get_contents($this->path . '/fixtures/parser_test.yaml');
 
         $this->assertEquals(
             [

@@ -12,14 +12,19 @@
 namespace OpxCore\DataSet;
 
 use OpxCore\DataSet\Foundation\Collectible;
+use OpxCore\DataSet\Foundation\Policy;
 use OpxCore\DataSet\Traits\HasNamings;
 use OpxCore\DataSet\Traits\TemplateGeneralPropertiesTrait;
 use OpxCore\DataSet\Foundation\Collection;
+use OpxCore\Interfaces\Authorization\AuthorizationInterface;
 
 class Template
 {
     use TemplateGeneralPropertiesTrait,
         HasNamings;
+
+    /** @var Policy Policy to authorize */
+    protected Policy $policy;
 
     /** @var Collection Set of sections */
     public Collection $sections;
@@ -37,7 +42,7 @@ class Template
         $this->setNamespace($template['namespace'] ?? null);
         $this->setLocalization($template['localization'] ?? null);
         $this->setModel($template['model'] ?? null);
-
+        $this->policy = new Policy($template['policy'] ?? null);
         $this->sections = new Collection;
         $this->groups = new Collection;
         $this->fields = new Collection;
@@ -69,6 +74,22 @@ class Template
     }
 
     /**
+     * Get or set template policy.
+     *
+     * @param Policy|null $policy
+     *
+     * @return  Policy
+     */
+    public function policy(?Policy $policy = null): Policy
+    {
+        if ($policy !== null) {
+            $this->policy = $policy;
+        }
+
+        return $this->policy;
+    }
+
+    /**
      * Extend another template by current.
      *
      * @param Template $template
@@ -77,6 +98,8 @@ class Template
      */
     public function extend(Template $template): void
     {
+        $this->policy->setInherited($template->policy());
+
         foreach (['sections', 'groups', 'fields'] as $key) {
             if ($template->{$key}->count() === 0) {
                 continue;
@@ -92,6 +115,63 @@ class Template
                 }
                 $this->{$key}->add($collectible);
             }
+        }
+    }
+
+    /**
+     * Collect applicable permissions for field.
+     *
+     * @param Field $field Field to collect permissions.
+     *
+     * @return  array|null
+     */
+    protected function collectFieldPermissions(Field $field): ?array
+    {
+        $policy = $field->policy();
+        $mode = $policy->mode();
+
+        switch ($mode) {
+            // Unset all permissions
+            case Policy::MODE_UNSET:
+
+                return null;
+
+            // Get only one field permission
+            case Policy::MODE_NO_INHERIT:
+
+                return [$policy->permissions()];
+
+            // Get all or only current template permission inheriting
+            case Policy::MODE_INHERIT_CURRENT:
+            case Policy::MODE_INHERIT_ALL:
+            default:
+                $collection = [$this->policy()->collect($mode)];
+
+                if (isset($field->section, $this->sections[$field->section])) {
+                    /** @var Section $section */
+                    $section = $this->sections[$field->section];
+                    $collection[] = $section->policy()->collect($mode);
+                }
+
+                if (isset($field->group, $this->groups[$field->group])) {
+                    /** @var Group $group */
+                    $group = $this->groups[$field->group];
+                    $collection[] = $group->policy()->collect($mode);
+                }
+
+                $collection[] = $policy->collect();
+
+                return array_merge(...$collection);
+        }
+    }
+
+
+    public function resolvePermissions(AuthorizationInterface $resolver): void
+    {
+        foreach ($this->fields as $name => &$field) {
+            /** @var Field $field */
+            $resolved = $resolver->check($this->collectFieldPermissions($field), ['read', 'update']);
+            $field->authorize($resolved);
         }
     }
 }

@@ -14,6 +14,11 @@ class LoaderTest extends TestCase
 {
     protected $path = __DIR__;
 
+    protected function makeCacheDriver(): FileCache
+    {
+        return new FileCache(sys_get_temp_dir() . '/cache_test/');
+    }
+
     protected function initLoader(): Loader
     {
         $paths = new PathSet([
@@ -22,7 +27,7 @@ class LoaderTest extends TestCase
         ]);
         $reader = new YamlFileReader();
         $parser = new YamlParser();
-        $cache = new FileCache($this->path . '/assets/cache');
+        $cache = $this->makeCacheDriver();
 
         return new Loader($paths, $reader, $parser, $cache);
     }
