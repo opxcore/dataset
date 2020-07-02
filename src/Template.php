@@ -129,23 +129,20 @@ class Template
     {
         $policy = $field->policy();
         $mode = $policy->mode();
+        $collection = [$policy->collect($mode)];
 
+        // Get only one field permission or unset all permissions
         switch ($mode) {
-            // Unset all permissions
             case Policy::MODE_UNSET:
-
-                return null;
-
-            // Get only one field permission
             case Policy::MODE_NO_INHERIT:
-
-                return [$policy->permissions()];
+                // There is no need to collect other permissions.
+                break;
 
             // Get all or only current template permission inheriting
             case Policy::MODE_INHERIT_CURRENT:
             case Policy::MODE_INHERIT_ALL:
             default:
-                $collection = [$this->policy()->collect($mode)];
+                $collection[] = $this->policy->collect($mode);
 
                 if (isset($field->section, $this->sections[$field->section])) {
                     /** @var Section $section */
@@ -159,10 +156,9 @@ class Template
                     $collection[] = $group->policy()->collect($mode);
                 }
 
-                $collection[] = $policy->collect();
-
-                return array_merge(...$collection);
         }
+
+        return array_merge(...$collection);
     }
 
 
