@@ -88,4 +88,15 @@ class PolicyTest extends TestCase
         $policy->setMode('');
         $this->assertEquals(Policy::MODE_INHERIT_ALL, $policy->mode());
     }
+
+    public function testCollect(): void
+    {
+        $policy = new Policy(['permissions' => 'test']);
+        $policy->setInherited(new Policy(['permissions' => 'inherited']));
+
+        $this->assertEquals([], $policy->collect(Policy::MODE_UNSET));
+        $this->assertEquals(['test'], $policy->collect(Policy::MODE_NO_INHERIT));
+        $this->assertEquals(['test'], $policy->collect(Policy::MODE_INHERIT_CURRENT));
+        $this->assertEquals(['test', 'inherited'], $policy->collect(Policy::MODE_INHERIT_ALL));
+    }
 }

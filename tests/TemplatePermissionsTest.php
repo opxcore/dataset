@@ -41,7 +41,12 @@ class TemplatePermissionsTest extends TestCase
             ['read' => true, 'update' => true],
         ];
         foreach ($permissions as $permission) {
-            yield new Policy(['permissions' => $permission, 'mode' => $mode]);
+            $policy = new Policy(['permissions' => $permission, 'mode' => $mode]);
+            $policy->setInherited(new Policy([[
+                'permissions' => ['read' => false, 'update' => false],
+                'mode' => Policy::MODE_INHERIT_ALL
+            ]]));
+            yield $policy;
         }
     }
 
@@ -97,7 +102,7 @@ class TemplatePermissionsTest extends TestCase
         }
     }
 
-    public function testPermissionsInherit(): void
+    public function testPermissionsInheritCurrent(): void
     {
         /** @var Template $template */
         /** @var Section $section */
@@ -124,5 +129,25 @@ class TemplatePermissionsTest extends TestCase
                 }
             }
         }
+    }
+
+    public function testPermissionsInheritAll(): void
+    {
+        /** @var Template $template */
+        /** @var Section $section */
+        /** @var Group $group */
+        /** @var Field $field */
+        [$template] = $this->initObjects();
+
+        $template->policy()->setInherited(new Policy(['permissions' => ['read' => false, 'update' => false], 'mode' => Policy::MODE_INHERIT_ALL]));
+        $template->resolvePermissions(new Authorization());
+        $this->assertFalse($template->fields['field']->couldBeRead());
+        $this->assertFalse($template->fields['field']->couldBeUpdated());
+
+        $template->policy()->setMode(Policy::MODE_NO_INHERIT);
+
+        $template->resolvePermissions(new Authorization());
+        $this->assertTrue($template->fields['field']->couldBeRead());
+        $this->assertTrue($template->fields['field']->couldBeUpdated());
     }
 }

@@ -145,7 +145,10 @@ class Policy
      */
     public function collect(?int $mode = null): array
     {
-        switch ($mode ?? $this->mode()) {
+        if ($mode === null || $mode === self::MODE_INHERIT_ALL) {
+            $mode = $this->mode();
+        }
+        switch ($mode) {
             case self::MODE_UNSET:
                 // Unset all permissions
                 return [];
