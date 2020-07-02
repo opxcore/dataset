@@ -12,10 +12,15 @@
 namespace OpxCore\DataSet\Loader;
 
 use OpxCore\DataSet\Exceptions\InvalidTemplateDefinitionException;
+use OpxCore\DataSet\Field;
+use OpxCore\DataSet\Foundation\Collection;
+use OpxCore\DataSet\Foundation\Policy;
+use OpxCore\DataSet\Group;
 use OpxCore\DataSet\Loader\Interfaces\CacheInterface;
 use OpxCore\DataSet\Loader\Interfaces\ParserInterface;
 use OpxCore\DataSet\Loader\Interfaces\ReaderInterface;
 use OpxCore\DataSet\Loader\Traits\MakeFileName;
+use OpxCore\DataSet\Section;
 use OpxCore\DataSet\Template;
 use OpxCore\DataSet\Utils\NameResolver;
 use OpxCore\PathSet\PathSet;
@@ -89,7 +94,14 @@ class Loader implements Interfaces\LoaderInterface
             // If cache exists and actual get serialized template array
             $serialized = $this->cache->get($cacheFileName);
 
-            $template = new Template(unserialize($serialized, ['allowed_classes' => false]));
+            $template = unserialize($serialized, ['allowed_classes' => [
+                Template::class,
+                Collection::class,
+                Section::class,
+                Group::class,
+                Field::class,
+                Policy::class,
+            ]]);
         } else {
             // Otherwise read template array via reader
             $result = $this->reader->content($file);
@@ -97,12 +109,13 @@ class Loader implements Interfaces\LoaderInterface
             // Parse it
             $result = $this->parser->parse($result);
 
-            // And cache it
-            if ($this->cache !== null) {
-                $this->cache->set($cacheFileName, serialize($result));
-            }
-
+            // Make template
             $template = new Template($result);
+
+            // And cache whole template
+            if ($this->cache !== null && $template->isCacheEnabled()) {
+                $this->cache->set($cacheFileName, serialize($template));
+            }
         }
 
         if (empty($options['not_extend']) && ($extends = $template->extends()) !== null) {
