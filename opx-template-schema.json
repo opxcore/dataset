@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JSON Schema for OPX Data Template",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "namespace",
+    "localization",
+    "model",
+    "fields"
+  ],
+  "definitions": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "permissions"
+      ],
+      "properties": {
+        "permissions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "read",
+            "update"
+          ],
+          "properties": {
+            "read": {
+              "type": [
+                "string",
+                "boolean",
+                "array"
+              ],
+              "default": true
+            },
+            "update": {
+              "type": [
+                "string",
+                "boolean",
+                "array"
+              ],
+              "default": true
+            }
+          }
+        },
+        "mode": {
+          "oneOf": [
+            {
+              "enum": [
+                "unset"
+              ],
+              "description": "Disables all inherited and current permissions."
+            },
+            {
+              "enum": [
+                "no inherit"
+              ],
+              "description": "Only current permissions would be checked."
+            },
+            {
+              "enum": [
+                "inherit current"
+              ],
+              "description": "All permissions would be inherited except parent template permissions."
+            },
+            {
+              "enum": [
+                "inherit all"
+              ],
+              "description": "All permissions would be inherited."
+            }
+          ],
+          "default": "inherit all"
+        }
+      }
+    },
+    "short_ref": {
+      "type": "string",
+      "pattern": "^[a-z\\d]+[a-z_\\d]*[a-z\\d]+$"
+    },
+    "full_ref": {
+      "type": "string",
+      "pattern": "^[a-z\\d_]+[a-z\\d]::[a-z\\d_]+[a-z\\d]\\.[a-z\\d_]+[a-z\\d]$"
+    },
+    "node_ref": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "dependencies": {
+        "label": {
+          "not": {"required": ["caption"]}
+        },
+        "caption": {
+          "not": {"required": ["label"]}
+        }
+      },
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/short_ref"
+        },
+        "label": {
+          "$ref": "#/definitions/full_ref"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/definitions/policy"
+        }
+      }
+    }
+  },
+  "properties": {
+    "extends": {
+      "$ref": "#/definitions/full_ref",
+      "description": "Name of template too extend. Format: 'namespace::model.template'. `namespace` is a name of `Path` registered in `PathSet` with path(s) to search template. If no namespace given global namespace would be used, e.g. `path.name` would be read as `*::path.name`. `path` and `name` is a related path (to `PathSet` paths) and name of file without extension. File extension depends on file reader and would be added automatically (`.yaml` for `YamlFileReader` and `.php` for `PhpFileReader`). OpxCore consideration (but not required at all): `namespace` is a name of module providing model; `model` is a name of model; `template` is a type of model data template, `default` is a name for primary model definition."
+    },
+    "flags": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "oneOf": [
+          {
+            "const": "disable cache",
+            "description": "Disable parsed template caching. Enabled by default."
+          },
+          {
+            "const": "disable extending",
+            "description": "Do not extend template. Enabled by default."
+          }
+        ]
+      }
+    },
+    "namespace": {
+      "$ref": "#/definitions/short_ref",
+      "description": "Used to generate labels: {namespace::}{localization.}{model.}(section|group|field).name"
+    },
+    "localization": {
+      "$ref": "#/definitions/short_ref",
+      "description": "Used to generate labels: {namespace::}{localization.}{model.}(section|group|field).name"
+    },
+    "model": {
+      "$ref": "#/definitions/short_ref",
+      "description": "Used to generate labels: {namespace::}{localization.}{model.}(section|group|field).name"
+    },
+    "policy": {
+      "$ref": "#/definitions/policy",
+      "description": "Template level policies."
+    },
+    "sections": {
+      "type": "array",
+      "description": "Sections definitions",
+      "items": {
+        "$ref": "#/definitions/node_ref",
+        "additionalProperties": false,
+        "properties": {
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "description": "Groups definitions",
+      "items": {
+        "$ref": "#/definitions/node_ref",
+        "additionalProperties": false,
+        "properties": {
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "description": "Fields definitions",
+      "items": {
+        "$ref": "#/definitions/node_ref",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["number", "text"]
+          },
+          "section": {
+            "$ref": "#/definitions/short_ref"
+          },
+          "group":{
+            "$ref": "#/definitions/short_ref"
+          },
+          "placement": {
+            "type": "string",
+            "pattern": ""
+          }
+        },
+        "dependencies": {
+          "section": {
+            "not": {"required": ["placement"]}
+          },
+          "group": {
+            "not": {"required": ["placement"]}
+          },
+          "placement": {
+            "not": {"required": ["section","group"]}
+          }
+        }
+      }
+    }
+  }
+}

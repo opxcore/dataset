@@ -6,6 +6,7 @@
 # - `namespace` is a name of module providing model
 # - `model` is a name of model
 # - `template` is a type of model data template, `default` is a name for primary model definition
+
 extends: namespace::model.template
 
 # Flags used to customize at compilation time
@@ -37,30 +38,49 @@ model: model
 policy:
   permissions:
     read: true
-    update: false
+    update: true
   mode: inherit all
 
 # Set of sections definitions. Sections are used to split fields to tabs in frontend and distribute permissions.
 sections:
   - name: general # *required* Name of section.
-    label: namespace::localization_file.localization_key # Localization label. See description above.
     caption: General section # Direct caption. See description above.
     policy: # Set of policy. See description above.
+      permissions:
+        read: true
+        update: true
+      mode: inherit all
 
 # Set of groups definitions. They are used to group related fields behind one caption in frontend and distribute permissions.
 groups:
   - name: primary # *required* Name of group.
-    label: namespace::localization_file.localization_key # Localization label. See description above.
-    caption: Primagy group # Direct caption. See description above.
+    label: namespace::localization_file.localization_key
     policy: # Set of policy. See description above.
+      permissions:
+        read: true
+        update: true
+      mode: inherit all
 
 # Set of fields definitions
 fields:
   - name: id # *required* Name of field.
     label: namespace::localization_file.localization_key # Localization label. See description above.
-    caption: Field title # Direct caption. See description above.
     policy: # Set of policy. See description above.
+      permissions:
+        read: true
+        update: true
+      mode: inherit all
     section: general # Section which field belongs to
     group: primary # Group which field belongs to
+    type: text # Field type definition. By default this value would be `default`.
+  - name: id # *required* Name of field.
+    label: namespace::localization_file.localization_key # Localization label. See description above.
+    policy: # Set of policy. See description above.
+      permissions:
+        read: true
+        update: true
+      mode: inherit all
     placement: general/primary # Shorthand for section and group. If placement is set, section and group will be ignored.
-    type: field_type # Field type definition. By default this value would be `default`.
+    type: text # Field type definition. By default this value would be `default`.
+
+## TODO make proper patterns
