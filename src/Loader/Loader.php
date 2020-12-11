@@ -16,6 +16,7 @@ use OpxCore\DataSet\Field;
 use OpxCore\DataSet\Foundation\Collection;
 use OpxCore\DataSet\Foundation\Policy;
 use OpxCore\DataSet\Group;
+use OpxCore\DataSet\Loader\Exceptions\FileNotFoundException;
 use OpxCore\DataSet\Loader\Interfaces\CacheInterface;
 use OpxCore\DataSet\Loader\Interfaces\ParserInterface;
 use OpxCore\DataSet\Loader\Interfaces\ReaderInterface;
@@ -29,10 +30,19 @@ class Loader implements Interfaces\LoaderInterface
 {
     use MakeFileName;
 
+    /** @var PathSet Set of paths to search template files */
     protected PathSet $paths;
+
+    /** @var ReaderInterface File reader */
     protected ReaderInterface $reader;
+
+    /** @var ParserInterface File content parser */
     protected ParserInterface $parser;
+
+    /** @var CacheInterface|null Compiled template caching driver */
     protected ?CacheInterface $cache;
+
+    /** @var array|null Options */
     protected ?array $options;
 
     /**
@@ -55,7 +65,6 @@ class Loader implements Interfaces\LoaderInterface
         $this->options = $options;
     }
 
-
     /**
      * Find file with name in set of search paths and last modification timestamp.
      *
@@ -64,67 +73,137 @@ class Loader implements Interfaces\LoaderInterface
      *
      * @return  Template
      */
-    public function get(string $name, ?array $options = null): Template
-    {
-        // $template = $this->load($name, $options);
-
-        return new Template();
-    }
-
-    /**
-     * @param string $name
-     * @param array|null $options
-     *
-     * @return  Template
-     */
     public function load(string $name, ?array $options = null): Template
     {
+        // Make namespace and filename from complete name
+        // ('namespace::model.template' => ['namespace', 'model/template'])
         [$namespace, $filename] = NameResolver::resolve($name);
-        $paths = $this->paths->get($namespace);
 
-        // First find requested template file
-        $file = $this->reader->find($filename, $this->reader->extension(), $paths, $options);
+        // Find file in paths
+        $file = $this->findFile($namespace, $filename, $options);
 
-        // Prepare cache name
-        $cacheFileName = ($namespace === '*' ? null : $namespace . DIRECTORY_SEPARATOR) . $file->localPath() . DIRECTORY_SEPARATOR . $file->filename();
+        // Try to load template from cache
+        $template = $this->loadFromCache($namespace, $file);
 
-        // And look for requested template in cache with actual timestamp
-        if ($this->cache !== null && $this->cache->has($cacheFileName, $file->timestamp())) {
+        // If no cached template
+        if ($template === null) {
 
-            // If cache exists and actual get serialized template array
-            $serialized = $this->cache->get($cacheFileName);
-
-            $template = unserialize($serialized, ['allowed_classes' => [
-                Template::class,
-                Collection::class,
-                Section::class,
-                Group::class,
-                Field::class,
-                Policy::class,
-            ]]);
-        } else {
-            // Otherwise read template array via reader
-            $result = $this->reader->content($file);
+            // Read it via reader
+            $content = $this->reader->content($file);
 
             // Parse it
-            $result = $this->parser->parse($result);
+            $templateArray = $this->parser->parse($content);
 
             // Make template
-            $template = new Template($result);
+            $template = new Template($templateArray);
 
             // And cache whole template
-            if ($this->cache !== null && $template->isCacheEnabled()) {
-                $this->cache->set($cacheFileName, serialize($template));
-            }
+            $this->storeToCache($namespace, $file, $template);
         }
 
-        if (empty($options['not_extend']) && ($extends = $template->extends()) !== null) {
+        // Check if template extends other
+        if (
+            empty($options['not_extend'])
+            && $template->isExtendingEnabled()
+            && ($extends = $template->extends()) !== null
+        ) {
+
+            // Prevent recursive extending
             if ($extends === $name) {
                 throw new InvalidTemplateDefinitionException("Recursive extending found in [{$extends}]");
             }
+
+            // Load and merge template to be extended
             $template->extend($this->load($extends, $options));
         }
 
         return $template;
+    }
+
+    /**
+     * Find file for given namespace and filename.
+     *
+     * @param string $namespace
+     * @param string $filename
+     * @param array|null $options
+     *
+     * @return  File
+     * @throws  FileNotFoundException
+     * @internal
+     */
+    protected function findFile(string $namespace, string $filename, ?array $options): File
+    {
+        $paths = $this->paths->get($namespace);
+
+        return $this->reader->find($filename, $this->reader->extension(), $paths, $options);
+    }
+
+    /**
+     * Find and load template from cache if it set.
+     *
+     * @param string $namespace
+     * @param File $file
+     *
+     * @return  Template|null
+     * @internal
+     */
+    protected function loadFromCache(string $namespace, File $file): ?Template
+    {
+        // If cache not set we can't load anything from it.
+        if ($this->cache === null) {
+            return null;
+        }
+
+        // Prepare cache name
+        $cacheFileName = self::cacheFileName($namespace, $file);
+
+        // Look for requested template in cache with actual timestamp
+        if (!$this->cache->has($cacheFileName, $file->timestamp())) {
+            return null;
+        }
+
+        // Load template
+        $serialized = $this->cache->get($cacheFileName);
+
+        // Return unserialized template
+        return unserialize($serialized, ['allowed_classes' => [
+            Template::class,
+            Collection::class,
+            Section::class,
+            Group::class,
+            Field::class,
+            Policy::class,
+        ]]);
+    }
+
+    /**
+     * Store serialized template to cache if it set.
+     *
+     * @param string $namespace
+     * @param File $file
+     * @param Template $template
+     *
+     * @return  void
+     * @internal
+     */
+    protected function storeToCache(string $namespace, File $file, Template $template): void
+    {
+        if ($this->cache !== null && $template->isCacheEnabled()) {
+            $this->cache->set(self::cacheFileName($namespace, $file), serialize($template));
+        }
+    }
+
+    /**
+     * Generate filename for template cache file.
+     *
+     * @param string $namespace
+     * @param File $file
+     *
+     * @return  string
+     * @internal
+     */
+    protected static function cacheFileName(string $namespace, File $file): string
+    {
+        return ($namespace === '*' ? null : $namespace . DIRECTORY_SEPARATOR) . $file->localPath() . DIRECTORY_SEPARATOR . $file->filename();
     }
 }
