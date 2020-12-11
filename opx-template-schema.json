@@ -76,11 +76,11 @@
     },
     "short_ref": {
       "type": "string",
-      "pattern": "^[a-z\\d]+[a-z_\\d]*[a-z\\d]+$"
+      "pattern": "^[a-z\\d]+(_[a-z\\d]+)*$"
     },
     "full_ref": {
       "type": "string",
-      "pattern": "^[a-z\\d_]+[a-z\\d]::[a-z\\d_]+[a-z\\d]\\.[a-z\\d_]+[a-z\\d]$"
+      "pattern": "^[a-z\\d]+(_[a-z\\d]+)*::[a-z\\d]+(_[a-z\\d]+)*\\.[a-z\\d]+(_[a-z\\d]+)*$"
     },
     "node_ref": {
       "type": "object",
@@ -194,7 +194,7 @@
         },
         "dependencies": {
           "section": {
-            "not": {"required": ["placement"]}
+            "not": {"required": ["placement"]},
           },
           "group": {
             "not": {"required": ["placement"]}
