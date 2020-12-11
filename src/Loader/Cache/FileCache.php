@@ -40,7 +40,7 @@ class FileCache implements CacheInterface
      *
      * @return  bool
      */
-    public function has($filename, Carbon $validFrom): bool
+    public function has(string $filename, Carbon $validFrom): bool
     {
         $fullName = $this->makeFilename($filename);
 
@@ -66,7 +66,7 @@ class FileCache implements CacheInterface
      *
      * @return  mixed
      */
-    public function get($filename)
+    public function get(string $filename)
     {
         return @file_get_contents($this->makeFilename($filename));
     }
@@ -79,7 +79,7 @@ class FileCache implements CacheInterface
      *
      * @return  void
      */
-    public function set($filename, string $content): void
+    public function set(string $filename, string $content): void
     {
         $name = $this->makeFilename($filename);
         // make directory recursive
@@ -99,7 +99,7 @@ class FileCache implements CacheInterface
      *
      * @return  void
      */
-    public function unset($filename): void
+    public function unset(string $filename): void
     {
         @unlink($this->makeFilename($filename));
     }

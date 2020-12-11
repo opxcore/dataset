@@ -23,7 +23,7 @@ interface CacheInterface
      *
      * @return  bool
      */
-    public function has($filename, Carbon $validFrom): bool;
+    public function has(string $filename, Carbon $validFrom): bool;
 
     /**
      * Get content from cache.
@@ -32,7 +32,7 @@ interface CacheInterface
      *
      * @return  mixed
      */
-    public function get($filename);
+    public function get(string $filename);
 
     /**
      * Write content to cache.
@@ -42,7 +42,7 @@ interface CacheInterface
      *
      * @return  void
      */
-    public function set($filename, string $content): void;
+    public function set(string $filename, string $content): void;
 
     /**
      * Remove content from cache.
@@ -51,5 +51,5 @@ interface CacheInterface
      *
      * @return  void
      */
-    public function unset($filename): void;
+    public function unset(string $filename): void;
 }

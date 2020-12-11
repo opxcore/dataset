@@ -42,56 +42,56 @@ class Collection implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Whether a Collectible exists.
      *
-     * @param string $name A name of Collectible to check for.
+     * @param mixed $offset A name of Collectible to check for.
      *
      * @return  bool
      */
-    public function offsetExists($name): bool
+    public function offsetExists($offset): bool
     {
-        return isset($this->contents[$name]);
+        return isset($this->contents[$offset]);
     }
 
     /**
      * Retrieve Collectible.
      *
-     * @param string $name
+     * @param mixed $offset
      *
      * @return  Collectible
      */
-    public function offsetGet($name): Collectible
+    public function offsetGet($offset): Collectible
     {
-        return $this->contents[$name];
+        return $this->contents[$offset];
     }
 
     /**
      * Set Collectible.
      *
-     * @param string $name
-     * @param Collectible $collectible
+     * @param mixed $offset
+     * @param mixed $value
      *
      * @return  void
      */
-    public function offsetSet($name, $collectible): void
+    public function offsetSet($offset, $value): void
     {
-        if (!$collectible instanceof Collectible) {
-            $type = gettype($collectible);
-            $type = ($type !== 'object') ?: get_class($collectible);
+        if (!$value instanceof Collectible) {
+            $type = gettype($value);
+            $type = ($type !== 'object') ?: get_class($value);
             throw new InvalidArgumentException("New value must be an instance of [Collectible], [{$type}] given.");
         }
 
-        $this->contents[$name] = $collectible;
+        $this->contents[$offset] = $value;
     }
 
     /**
      * Unset Collectible.
      *
-     * @param mixed $name
+     * @param mixed $offset
      *
      * @return  void
      */
-    public function offsetUnset($name): void
+    public function offsetUnset($offset): void
     {
-        unset($this->contents[$name]);
+        unset($this->contents[$offset]);
     }
 
     /**
