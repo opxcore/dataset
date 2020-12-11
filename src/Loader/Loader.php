@@ -83,7 +83,7 @@ class Loader implements Interfaces\LoaderInterface
         $file = $this->findFile($namespace, $filename, $options);
 
         // Try to load template from cache
-        $template = $this->loadFromCache($namespace, $file);
+        $template = $this->loadFromCache($namespace, $file, $options);
 
         // If no cached template
         if ($template === null) {
@@ -98,12 +98,12 @@ class Loader implements Interfaces\LoaderInterface
             $template = new Template($templateArray);
 
             // And cache whole template
-            $this->storeToCache($namespace, $file, $template);
+            $this->storeToCache($namespace, $file, $template, $options);
         }
 
         // Check if template extends other
         if (
-            empty($options['not_extend'])
+            empty($options['without_extending'])
             && $template->isExtendingEnabled()
             && ($extends = $template->extends()) !== null
         ) {
@@ -143,14 +143,15 @@ class Loader implements Interfaces\LoaderInterface
      *
      * @param string $namespace
      * @param File $file
+     * @param array|null $options
      *
      * @return  Template|null
      * @internal
      */
-    protected function loadFromCache(string $namespace, File $file): ?Template
+    protected function loadFromCache(string $namespace, File $file, ?array $options): ?Template
     {
         // If cache not set we can't load anything from it.
-        if ($this->cache === null) {
+        if (($this->cache === null) || ($options['without_cache'] ?? false === true)) {
             return null;
         }
 
@@ -182,13 +183,14 @@ class Loader implements Interfaces\LoaderInterface
      * @param string $namespace
      * @param File $file
      * @param Template $template
+     * @param array|null $options
      *
      * @return  void
      * @internal
      */
-    protected function storeToCache(string $namespace, File $file, Template $template): void
+    protected function storeToCache(string $namespace, File $file, Template $template, ?array $options = null): void
     {
-        if ($this->cache !== null && $template->isCacheEnabled()) {
+        if ($this->cache !== null && ($options['without_cache'] ?? false === true) && $template->isCacheEnabled()) {
             $this->cache->set(self::cacheFileName($namespace, $file), serialize($template));
         }
     }
