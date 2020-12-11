@@ -37,5 +37,5 @@ interface LoaderInterface
      *
      * @return  Template
      */
-    public function get(string $name, ?array $options = null): Template;
+    public function load(string $name, ?array $options = null): Template;
 }
