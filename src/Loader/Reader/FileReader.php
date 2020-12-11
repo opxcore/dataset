@@ -31,6 +31,8 @@ abstract class FileReader implements ReaderInterface
      * @param array|null $options
      *
      * @return  File
+     *
+     * @throws  FileNotFoundException
      */
     public function find(string $name, ?string $extension, $paths, ?array $options = null): File
     {
