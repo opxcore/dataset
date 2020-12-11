@@ -38,7 +38,7 @@ class CollectibleTest extends TestCase
     public function testName(): void
     {
         $collectible = $this->makeCollectible('collectible');
-        $this->assertEquals('collectible', $collectible->name());
+        self::assertEquals('collectible', $collectible->name());
     }
 
     public function testNoNameGiven(): void
@@ -56,7 +56,7 @@ class CollectibleTest extends TestCase
     public function testSetLabel(): void
     {
         $collectible = $this->makeCollectible('collectible');
-        $this->assertEquals('namespace::localization.model.context.collectible', $collectible->label());
+        self::assertEquals('namespace::localization.model.context.collectible', $collectible->label());
     }
 
     public function testLabelGeneration(): void
@@ -77,7 +77,7 @@ class CollectibleTest extends TestCase
             }
         }
 
-        $this->assertEquals([
+        self::assertEquals([
             'collectible',
             'context.collectible',
             'model.collectible',
@@ -100,31 +100,31 @@ class CollectibleTest extends TestCase
     public function testNamespace(): void
     {
         $collectible = $this->makeCollectible();
-        $this->assertEquals('namespace', $collectible->namespace());
+        self::assertEquals('namespace', $collectible->namespace());
     }
 
     public function testLocalization(): void
     {
         $collectible = $this->makeCollectible();
-        $this->assertEquals('localization', $collectible->localization());
+        self::assertEquals('localization', $collectible->localization());
     }
 
     public function testModel(): void
     {
         $collectible = $this->makeCollectible();
-        $this->assertEquals('model', $collectible->model());
+        self::assertEquals('model', $collectible->model());
     }
 
     public function testContext(): void
     {
         $collectible = $this->makeCollectible();
-        $this->assertEquals('context', $collectible->context());
+        self::assertEquals('context', $collectible->context());
     }
 
     public function testCaption(): void
     {
         $collectible = $this->makeCollectible();
         $collectible->setCaption('new caption');
-        $this->assertEquals('new caption', $collectible->caption());
+        self::assertEquals('new caption', $collectible->caption());
     }
 }

@@ -23,7 +23,7 @@ class DummyParserTest extends TestCase
             ]
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             $test,
             $parser->parse($test)
         );

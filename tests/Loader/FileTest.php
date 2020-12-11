@@ -16,7 +16,7 @@ class FileTest extends TestCase
     public function testGetFileName(): void
     {
         $file = $this->initFile();
-        $this->assertEquals(
+        self::assertEquals(
             ['path/home', 'sub', 'filename', 'ext', Carbon::parse('2020-06-18 12:00')],
             [$file->path(), $file->localPath(), $file->filename(), $file->extension(), $file->timestamp()]
         );
@@ -25,19 +25,19 @@ class FileTest extends TestCase
     public function testFileNewerCase(): void
     {
         $file = $this->initFile();
-        $this->assertFalse($file->isNotNewerWhen(Carbon::parse('2020-06-18 11:59')));
+        self::assertFalse($file->isNotNewerWhen(Carbon::parse('2020-06-18 11:59')));
     }
 
     public function testFileOlderCase(): void
     {
         $file = $this->initFile();
-        $this->assertTrue($file->isNotNewerWhen(Carbon::parse('2020-06-18 12:01')));
+        self::assertTrue($file->isNotNewerWhen(Carbon::parse('2020-06-18 12:01')));
     }
 
     public function testFileSameCase(): void
     {
         $file = $this->initFile();
         $file->setTimestamp(Carbon::parse('2020-06-18 12:00'));
-        $this->assertTrue($file->isNotNewerWhen(Carbon::parse('2020-06-18 12:00')));
+        self::assertTrue($file->isNotNewerWhen(Carbon::parse('2020-06-18 12:00')));
     }
 }

@@ -29,7 +29,7 @@ class FieldTest extends TestCase
     public function testCreateFromArray(): void
     {
         $field = $this->makeField();
-        $this->assertEquals(
+        self::assertEquals(
             'default',
             $field->type
         );
@@ -38,7 +38,7 @@ class FieldTest extends TestCase
     public function testCreateFromArrayWithType(): void
     {
         $field = $this->makeField('string');
-        $this->assertEquals(
+        self::assertEquals(
             'string',
             $field->type
         );
@@ -55,7 +55,7 @@ class FieldTest extends TestCase
     {
         $field = $this->makeField();
         $field->type = 'testing';
-        $this->assertEquals(
+        self::assertEquals(
             'testing',
             $field->type
         );
@@ -65,13 +65,13 @@ class FieldTest extends TestCase
     {
         $field = $this->makeField();
         $field->validation = 'testing';
-        $this->assertTrue(isset($field->validation));
+        self::assertTrue(isset($field->validation));
     }
 
     public function testIsNotSet(): void
     {
         $field = $this->makeField();
-        $this->assertFalse(isset($field->validation));
+        self::assertFalse(isset($field->validation));
     }
 
     public function testSetInvalidProperty(): void

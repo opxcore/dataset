@@ -35,7 +35,7 @@ class TemplateTest extends TestCase
     {
         $templateArray = $this->getTemplateArray();
         $template = new Template($templateArray);
-        $this->assertEquals('namespace::model.template', $template->extends());
+        self::assertEquals('namespace::model.template', $template->extends());
     }
 
     public function testTemplateEmptyExtends(): void
@@ -43,7 +43,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         unset($templateArray['extends']);
         $template = new Template($templateArray);
-        $this->assertNull($template->extends());
+        self::assertNull($template->extends());
     }
 
     public function testTemplateExtendsGlobal(): void
@@ -51,7 +51,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         $templateArray['extends'] = 'model.template';
         $template = new Template($templateArray);
-        $this->assertEquals('*::model.template', $template->extends());
+        self::assertEquals('*::model.template', $template->extends());
     }
 
     /**
@@ -63,7 +63,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         unset($templateArray['flags']);
         $template = new Template($templateArray);
-        $this->assertTrue($template->isCacheEnabled() && $template->isExtendingEnabled());
+        self::assertTrue($template->isCacheEnabled() && $template->isExtendingEnabled());
     }
 
     public function testTemplateEmptyFlags(): void
@@ -71,7 +71,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         $templateArray['flags'] = [];
         $template = new Template($templateArray);
-        $this->assertTrue($template->isCacheEnabled() === true && $template->isExtendingEnabled() === true);
+        self::assertTrue($template->isCacheEnabled() === true && $template->isExtendingEnabled() === true);
     }
 
     public function testTemplateOnlyCacheDisable(): void
@@ -79,7 +79,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         $templateArray['flags'] = ['disable cache'];
         $template = new Template($templateArray);
-        $this->assertTrue($template->isCacheEnabled() === false && $template->isExtendingEnabled() === true);
+        self::assertTrue($template->isCacheEnabled() === false && $template->isExtendingEnabled() === true);
     }
 
     public function testTemplateOnlyExtendingDisable(): void
@@ -87,7 +87,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         $templateArray['flags'] = ['disable extending'];
         $template = new Template($templateArray);
-        $this->assertTrue($template->isCacheEnabled() === true && $template->isExtendingEnabled() === false);
+        self::assertTrue($template->isCacheEnabled() === true && $template->isExtendingEnabled() === false);
     }
 
     public function testTemplateCacheAndExtendingDisable(): void
@@ -95,7 +95,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         $templateArray['flags'] = ['disable cache', 'disable extending'];
         $template = new Template($templateArray);
-        $this->assertTrue($template->isCacheEnabled() === false && $template->isExtendingEnabled() === false);
+        self::assertTrue($template->isCacheEnabled() === false && $template->isExtendingEnabled() === false);
     }
 
     /**
@@ -108,7 +108,7 @@ class TemplateTest extends TestCase
     {
         $templateArray = $this->getTemplateArray();
         $template = new Template($templateArray);
-        $this->assertTrue(
+        self::assertTrue(
             $template->namespace() === 'namespace'
             && $template->localization() === 'template'
             && $template->model() === 'model'
@@ -120,7 +120,7 @@ class TemplateTest extends TestCase
         $templateArray = $this->getTemplateArray();
         unset($templateArray['namespace'], $templateArray['localization'], $templateArray['model']);
         $template = new Template($templateArray);
-        $this->assertTrue(
+        self::assertTrue(
             $template->namespace() === null
             && $template->localization() === null
             && $template->model() === null

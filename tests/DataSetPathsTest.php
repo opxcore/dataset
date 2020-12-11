@@ -25,7 +25,7 @@ class DataSetPathsTest extends TestCase
     {
         DataSet::addPath('another', 'path');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'path',
                 'global_alt',
@@ -39,7 +39,7 @@ class DataSetPathsTest extends TestCase
     {
         DataSet::addPath('name', 'path');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'path',
                 'local_alt',
@@ -62,7 +62,7 @@ class DataSetPathsTest extends TestCase
     {
         $pathSet = DataSet::getPaths();
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'global_alt',
                 'global',

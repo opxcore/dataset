@@ -18,7 +18,7 @@ class YamlFileReaderTest extends TestCase
         $loader = new YamlFileReader;
         $templateFile = $loader->find('/fixtures/simple_test', null, $this->path);
 
-        $this->assertEquals(
+        self::assertEquals(
             'simple_test',
             $templateFile->filename()
         );
@@ -29,7 +29,7 @@ class YamlFileReaderTest extends TestCase
         $loader = new YamlFileReader;
         $templateFile = $loader->find('/fixtures/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
 
-        $this->assertEquals(
+        self::assertEquals(
             'simple_test',
             $templateFile->filename()
         );
@@ -49,7 +49,7 @@ class YamlFileReaderTest extends TestCase
         $loader = new YamlFileReader;
         $templateFile = $loader->find('/fixtures/simple_test', 'ext', ['some_path', $this->path, 'another_path']);
 
-        $this->assertEquals(
+        self::assertEquals(
             'test',
             $loader->content($templateFile)
         );

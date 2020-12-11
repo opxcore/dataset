@@ -15,7 +15,7 @@ class PhpFileReaderTest extends TestCase
 
         $templateFile = $loader->find('/fixtures/php_test', $loader->extension(), $this->assetsPath);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'extends' => 'test',
                 'fields' => [

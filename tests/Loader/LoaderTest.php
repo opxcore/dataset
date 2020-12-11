@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class LoaderTest extends TestCase
 {
-    protected $path = __DIR__;
+    protected string $path = __DIR__;
 
     protected function makeCacheDriver(): FileCache
     {
@@ -44,7 +44,7 @@ class LoaderTest extends TestCase
             $names[] = $field->name();
         }
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'id',
                 'title',

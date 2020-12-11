@@ -68,8 +68,8 @@ class TemplatePermissionsTest extends TestCase
             foreach ($this->policyGenerator(Policy::MODE_UNSET) as $policy) {
                 $object->policy($policy);
                 $template->resolvePermissions(new Authorization());
-                $this->assertTrue($template->fields['field']->couldBeRead());
-                $this->assertTrue($template->fields['field']->couldBeUpdated());
+                self::assertTrue($template->fields['field']->couldBeRead());
+                self::assertTrue($template->fields['field']->couldBeUpdated());
             }
         }
     }
@@ -91,12 +91,12 @@ class TemplatePermissionsTest extends TestCase
                     $template->groups['group']->policy($groupPolicy);
                     $template->fields['field']->policy(new Policy(['permissions' => ['read' => false, 'update' => false], 'mode' => Policy::MODE_NO_INHERIT]));
                     $template->resolvePermissions(new Authorization());
-                    $this->assertFalse($template->fields['field']->couldBeRead());
-                    $this->assertFalse($template->fields['field']->couldBeUpdated());
+                    self::assertFalse($template->fields['field']->couldBeRead());
+                    self::assertFalse($template->fields['field']->couldBeUpdated());
                     $template->fields['field']->policy(new Policy(['permissions' => ['read' => true, 'update' => true], 'mode' => Policy::MODE_NO_INHERIT]));
                     $template->resolvePermissions(new Authorization());
-                    $this->assertTrue($template->fields['field']->couldBeRead());
-                    $this->assertTrue($template->fields['field']->couldBeUpdated());
+                    self::assertTrue($template->fields['field']->couldBeRead());
+                    self::assertTrue($template->fields['field']->couldBeUpdated());
                 }
             }
         }
@@ -123,8 +123,8 @@ class TemplatePermissionsTest extends TestCase
 
                         $can = $it && $is && $ig && $if;
 
-                        $this->assertEquals($can, $template->fields['field']->couldBeRead());
-                        $this->assertEquals($can, $template->fields['field']->couldBeUpdated());
+                        self::assertEquals($can, $template->fields['field']->couldBeRead());
+                        self::assertEquals($can, $template->fields['field']->couldBeUpdated());
                     }
                 }
             }
@@ -141,13 +141,13 @@ class TemplatePermissionsTest extends TestCase
 
         $template->policy()->setInherited(new Policy(['permissions' => ['read' => false, 'update' => false], 'mode' => Policy::MODE_INHERIT_ALL]));
         $template->resolvePermissions(new Authorization());
-        $this->assertFalse($template->fields['field']->couldBeRead());
-        $this->assertFalse($template->fields['field']->couldBeUpdated());
+        self::assertFalse($template->fields['field']->couldBeRead());
+        self::assertFalse($template->fields['field']->couldBeUpdated());
 
         $template->policy()->setMode(Policy::MODE_NO_INHERIT);
 
         $template->resolvePermissions(new Authorization());
-        $this->assertTrue($template->fields['field']->couldBeRead());
-        $this->assertTrue($template->fields['field']->couldBeUpdated());
+        self::assertTrue($template->fields['field']->couldBeRead());
+        self::assertTrue($template->fields['field']->couldBeUpdated());
     }
 }

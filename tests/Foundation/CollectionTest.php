@@ -32,7 +32,7 @@ class CollectionTest extends TestCase
         $collection = $this->makeCollection();
         $collectible = $this->makeCollectible('test');
         $collection->add($collectible);
-        $this->assertTrue(isset($collection['test']));
+        self::assertTrue(isset($collection['test']));
     }
 
     public function testOffsetNotExists(): void
@@ -40,7 +40,7 @@ class CollectionTest extends TestCase
         $collection = $this->makeCollection();
         $collectible = $this->makeCollectible('test');
         $collection->add($collectible);
-        $this->assertFalse(isset($collection['not_test']));
+        self::assertFalse(isset($collection['not_test']));
     }
 
     public function testOffsetInvalidSet(): void
@@ -56,7 +56,7 @@ class CollectionTest extends TestCase
         $collection = $this->makeCollection();
         $collectible = $this->makeCollectible('test');
         $collection->add($collectible);
-        $this->assertEquals($collection['test'], $collectible);
+        self::assertEquals($collection['test'], $collectible);
     }
 
     public function testOffsetUnset(): void
@@ -65,6 +65,6 @@ class CollectionTest extends TestCase
         $collectible = $this->makeCollectible('test');
         $collection->add($collectible);
         unset($collection['test']);
-        $this->assertFalse(isset($collection['test']));
+        self::assertFalse(isset($collection['test']));
     }
 }

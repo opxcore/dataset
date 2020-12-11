@@ -17,7 +17,7 @@ class FileCacheTest extends TestCase
     {
         $cache = $this->makeCacheDriver();
         $cache->set('test', 'test');
-        $this->assertTrue($cache->has('test', (new Carbon)->addHours(-1)));
+        self::assertTrue($cache->has('test', (new Carbon)->addHours(-1)));
         $cache->unset('test');
     }
 
@@ -25,21 +25,21 @@ class FileCacheTest extends TestCase
     {
         $cache = $this->makeCacheDriver();
         $cache->set('test', 'test');
-        $this->assertFalse($cache->has('test', (new Carbon)->addHours(1)));
+        self::assertFalse($cache->has('test', (new Carbon)->addHours(1)));
         $cache->unset('test');
     }
 
     public function testCacheMissing(): void
     {
         $cache = $this->makeCacheDriver();
-        $this->assertFalse($cache->has('missing', (new Carbon)->addHours(1)));
+        self::assertFalse($cache->has('missing', (new Carbon)->addHours(1)));
     }
 
     public function testCacheGetContent(): void
     {
         $cache = $this->makeCacheDriver();
         $cache->set('test', 'test');
-        $this->assertEquals('test', $cache->get('test'));
+        self::assertEquals('test', $cache->get('test'));
         $cache->unset('test');
     }
 }

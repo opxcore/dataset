@@ -15,7 +15,7 @@ class YamlParserTest extends TestCase
 
         $content = file_get_contents($this->path . '/fixtures/parser_test.yaml');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'extends' => 'test',
                 'fields' => [
