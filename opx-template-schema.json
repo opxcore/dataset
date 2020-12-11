@@ -194,7 +194,7 @@
         },
         "dependencies": {
           "section": {
-            "not": {"required": ["placement"]},
+            "not": {"required": ["placement"]}
           },
           "group": {
             "not": {"required": ["placement"]}
