@@ -62,9 +62,9 @@ class File
     /**
      * Get a file local path related path.
      *
-     * @return  mixed
+     * @return  string|null
      */
-    public function localPath()
+    public function localPath(): ?string
     {
         return $this->localPath;
     }

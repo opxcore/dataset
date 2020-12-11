@@ -113,7 +113,7 @@ class Policy
     /**
      * Set inherited permissions.
      *
-     * @param Policy|mixed $policy
+     * @param Policy|array|null $policy
      *
      * @return  void
      */
@@ -152,17 +152,14 @@ class Policy
             case self::MODE_UNSET:
                 // Unset all permissions
                 return [];
-                break;
             case self::MODE_NO_INHERIT:
             case self::MODE_INHERIT_CURRENT:
                 // Get only current or current template permission inheriting
                 return [$this->permissions()];
-                break;
             case self::MODE_INHERIT_ALL:
             default:
                 // Get all permissions chain
                 return array_merge([$this->permissions()], isset($this->inherited) ? $this->inherited->collect() : []);
-                break;
         }
     }
 }

@@ -129,7 +129,7 @@ class Field extends Collectible
      *
      * @return  mixed|null
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (!isset($this::ATTRIBUTES_LIST[$name])) {
             throw new BadPropertyAccessException("Missing property [{$name}] in Field");
@@ -145,7 +145,7 @@ class Field extends Collectible
      *
      * @return  bool
      */
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return isset($this::ATTRIBUTES_LIST[$name], $this->attributes[$name]);
     }
